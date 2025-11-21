@@ -2,7 +2,7 @@
 import { Box, css, Flex, Text, VStack } from '@devup-ui/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useMemo } from 'react'
+import { useEffect, useState } from 'react'
 
 function IndexMenu({
   children,
@@ -44,25 +44,36 @@ export function RightIndex() {
   return <RightIndexInner key={pathname} editUrl={editUrl} />
 }
 
+type MenuItem = {
+  text: string
+  sub: boolean
+  onClick: () => void
+}
+
 function RightIndexInner({ editUrl }: { editUrl: string }) {
-  const menus = useMemo(() => {
-    if (typeof document === 'undefined') return []
-    const elements = document.querySelectorAll(
-      '.markdown-body h1, .markdown-body h2',
-    )
-    const menus = []
-    for (let i = 0; i < elements.length; i++) {
-      const element = elements[i]
-      const text = element.textContent!
-      menus.push({
-        text,
-        sub: element.tagName === 'H2',
-        onClick: () => {
-          element.scrollIntoView({ behavior: 'smooth' })
-        },
-      })
+  const [menus, setMenus] = useState<MenuItem[]>([])
+
+  useEffect(() => {
+    const updateMenus = () => {
+      const elements = document.querySelectorAll(
+        '.markdown-body h1, .markdown-body h2',
+      )
+      const newMenus: MenuItem[] = []
+      for (let i = 0; i < elements.length; i++) {
+        const element = elements[i]
+        const text = element.textContent!
+        newMenus.push({
+          text,
+          sub: element.tagName === 'H2',
+          onClick: () => {
+            element.scrollIntoView({ behavior: 'smooth' })
+          },
+        })
+      }
+      setMenus(newMenus)
     }
-    return menus
+
+    requestAnimationFrame(updateMenus)
   }, [])
 
   return (

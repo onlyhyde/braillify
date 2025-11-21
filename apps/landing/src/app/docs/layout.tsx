@@ -20,6 +20,7 @@ export default function DocsLayout({
         color="$text"
         px={['16px', null, null, '60px']}
         py={['24px', null, null, '40px']}
+        w="100%"
       >
         {children}
       </Box>
