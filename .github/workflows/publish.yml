@@ -68,17 +68,19 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - name: Cargo tarpaulin and fmt
-        run: |
-          cargo install cargo-tarpaulin
-          rustup component add rustfmt clippy
       - name: Set up Python
         uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
       - name: Install uv
         uses: astral-sh/setup-uv@v5
       - name: Install maturin
         run: uv pip install maturin --system
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Install
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
       - run: |
           bun i
           bun run build
