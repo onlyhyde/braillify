@@ -8,5 +8,5 @@ name = "braillify"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.26.0"
+pyo3 = "0.27.1"
 braillify = { path = "../../libs/braillify" }

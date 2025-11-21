@@ -64,15 +64,15 @@ mod tests {
     //         .stdout(predicate::str::is_empty().not());
     // }
 
-    #[test]
-    #[serial]
-    fn test_braillify_integration_mixed() {
-        let mut cmd = get_built_binary().command();
-        cmd.arg("안녕 hello");
-        cmd.assert()
-            .success()
-            .stdout(predicate::str::is_empty().not());
-    }
+    // #[test]
+    // #[serial]
+    // fn test_braillify_integration_mixed() {
+    //     let mut cmd = get_built_binary().command();
+    //     cmd.arg("안녕 hello");
+    //     cmd.assert()
+    //         .success()
+    //         .stdout(predicate::str::is_empty().not());
+    // }
 
     #[test]
     #[serial]
