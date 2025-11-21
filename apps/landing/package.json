@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@devup-ui/components": "^0.1.36",
-    "@devup-ui/react": "^1.0.27",
+    "@devup-ui/react": "^1.0.28",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/react": "^3.1.1",
     "@next/mdx": "^16.0.3",
