@@ -13,7 +13,6 @@ fn main() -> Result<()> {
 
 #[cfg(all(test, feature = "cli"))]
 mod tests {
-    use std::io::Write;
     use std::sync::OnceLock;
 
     use assert_cmd::assert::OutputAssertExt;
