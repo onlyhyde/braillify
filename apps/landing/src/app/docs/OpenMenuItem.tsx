@@ -55,7 +55,7 @@ export function OpenMenuItem({
       </Flex>
       {open && (
         <Flex gap="8px">
-          <Box borderRight="1px solid var(--border, #E0E0E0)" w="10px" />
+          <Box borderRight="1px solid $border" w="10px" />
           <VStack flex="1" gap="4px">
             {subMenu.map(({ children, to }, idx) => {
               const selected = to

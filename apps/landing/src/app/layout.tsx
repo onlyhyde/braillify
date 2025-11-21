@@ -55,8 +55,8 @@ globalCss({
   body: {
     maxHeight: '100vh',
     background: '#373634',
-    WebkitFontSmoothing: 'antialiased',
-    MozOsxFontSmoothing: 'grayscale',
+    // WebkitFontSmoothing: 'antialiased',
+    // MozOsxFontSmoothing: 'grayscale',
     fontFamily: 'Spoqa Han Sans Neo, Arial, Helvetica, sans-serif',
   },
   '*': {
@@ -65,7 +65,7 @@ globalCss({
     margin: 0,
   },
   a: {
-    color: 'var(--link)',
+    color: '$link',
     textDecoration: 'none',
   },
   '::placeholder': {
