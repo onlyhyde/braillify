@@ -1,0 +1,1 @@
+{"changes":{"packages/python/pyproject.toml":"Patch","libs/braillify/Cargo.toml":"Patch","packages/node/package.json":"Patch"},"note":"Fix publish","date":"2025-11-24T03:14:29.395846300Z"}
