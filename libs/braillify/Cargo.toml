@@ -29,6 +29,9 @@ assert_cmd = "2"
 predicates = "3"
 escargot = "0.5.15"
 
+[target.'cfg(windows)'.build-dependencies]
+embed-manifest = "1.0"
+
 [features]
 default = ["cli"]
 cli = ["clap", "anyhow", "rustyline"]
