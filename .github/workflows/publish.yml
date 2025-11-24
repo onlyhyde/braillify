@@ -218,62 +218,76 @@ jobs:
             target: x86_64
             manylinux: auto
             os: linux
+            python-target: x64
           - runner: ubuntu-22.04
             target: x86
             manylinux: auto
             os: linux
+            python-target: x86
           - runner: ubuntu-22.04
             target: aarch64
             manylinux: auto
             os: linux
+            python-target: arm64
           - runner: ubuntu-22.04
             target: armv7
             manylinux: auto
             os: linux
+            python-target: arm64
           - runner: ubuntu-22.04
             target: ppc64le
             manylinux: auto
             os: linux
+            python-target: arm64
 
           # Linux musllinux
           - runner: ubuntu-22.04
             target: x86_64
             manylinux: musllinux_1_2
             os: musllinux
+            python-target: x64
           - runner: ubuntu-22.04
             target: x86
             manylinux: musllinux_1_2
             os: musllinux
+            python-target: x86
           - runner: ubuntu-22.04
             target: aarch64
             manylinux: musllinux_1_2
             os: musllinux
+            python-target: arm64
           - runner: ubuntu-22.04
             target: armv7
             manylinux: musllinux_1_2
             os: musllinux
+            python-target: arm64
 
           # Windows
           - runner: windows-latest
             target: x64
             os: windows
+            python-target: x64
           - runner: windows-latest
             target: x86
             os: windows
+            python-target: x86
 
           # macOS
           - runner: macos-13
             target: x86_64
             os: macos
+            python-target: x64
           - runner: macos-14
             target: aarch64
             os: macos
+            python-target: arm64
     steps:
       - uses: actions/checkout@v5
-      - name: Set up Python 3.11
+      - name: Set up Python 3.x
         uses: actions/setup-python@v6
         with:
-          python-version: '3.11'
+          python-version: '3.x'
+          architecture: ${{ matrix.python-target }}
       - name: Build wheels
         uses: PyO3/maturin-action@main
         with:
@@ -303,6 +317,18 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Install maturin
+        run: uv pip install maturin --system
+      - name: Install
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
       - name: Install dependencies
         run: bun install
       - name: Build
