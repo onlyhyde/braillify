@@ -197,9 +197,9 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: bindings-${{ matrix.settings.target }}
+          name: pkg-${{ matrix.settings.target }}
           path: |
-            packages/node/braillify.*.node
+            packages/node/pkg/*
           if-no-files-found: error
   
   # python
@@ -278,7 +278,7 @@ jobs:
         uses: PyO3/maturin-action@main
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist
+          args: --release --out dist --find-interpreter
           working-directory: packages/python
           manylinux: ${{ matrix.manylinux || '' }}
       - name: Upload wheels
@@ -311,10 +311,10 @@ jobs:
       # - name: create npm dirs
       #   run: bunx napi create-npm-dirs
       #   working-directory: packages/node
-      # - name: Download all artifacts
-      #   uses: actions/download-artifact@v5
-      #   with:
-      #     path: packages/node/artifacts
+      - name: Download all artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: packages/node/pkg/*
       # - name: Move artifacts
       #   run: bun run artifacts
       #   working-directory: packages/node
@@ -331,11 +331,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         working-directory: packages/node
-      - name: Upload Asset
-        uses: owjs3901/upload-github-release-asset@main
-        with:
-          upload_url: ${{ fromJson(needs.changepacks.outputs.release_assets_urls)['packages/node/package.json'] }}
-          asset_path: packages/node/npm/*/braillify.*.node
+      # - name: Upload Asset
+      #   uses: owjs3901/upload-github-release-asset@main
+      #   with:
+      #     upload_url: ${{ fromJson(needs.changepacks.outputs.release_assets_urls)['packages/node/package.json'] }}
+      #     asset_path: packages/node/pkg/*
 
 
   python-publish:
