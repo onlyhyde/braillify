@@ -58,6 +58,7 @@ globalCss({
     // WebkitFontSmoothing: 'antialiased',
     // MozOsxFontSmoothing: 'grayscale',
     fontFamily: 'Spoqa Han Sans Neo, Arial, Helvetica, sans-serif',
+    wordBreak: 'keep-all',
   },
   '*': {
     boxSizing: 'border-box',
