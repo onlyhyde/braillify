@@ -52,22 +52,22 @@ internal static class NativeLibraryLoader
         var rid = GetRuntimeIdentifier();
         var libraryFileName = GetLibraryFileName();
 
-        // 어셈블리 위치 기준 경로 탐색
-        // Search paths relative to assembly location
-        var assemblyDir = Path.GetDirectoryName(assembly.Location) ?? string.Empty;
+        // AppContext.BaseDirectory 사용 (NativeAOT 호환)
+        // Use AppContext.BaseDirectory (NativeAOT compatible)
+        var baseDir = AppContext.BaseDirectory;
         var paths = new[]
         {
             // NuGet 패키지 구조: runtimes/{rid}/native/{lib}
             // NuGet package structure: runtimes/{rid}/native/{lib}
-            Path.Combine(assemblyDir, "runtimes", rid, "native", libraryFileName),
+            Path.Combine(baseDir, "runtimes", rid, "native", libraryFileName),
 
             // 개발 환경: 직접 경로
             // Development: direct path
-            Path.Combine(assemblyDir, libraryFileName),
+            Path.Combine(baseDir, libraryFileName),
 
             // 상위 디렉토리 탐색
             // Parent directory search
-            Path.Combine(assemblyDir, "..", "runtimes", rid, "native", libraryFileName),
+            Path.Combine(baseDir, "..", "runtimes", rid, "native", libraryFileName),
         };
 
         foreach (var path in paths)
