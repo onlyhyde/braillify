@@ -11,6 +11,13 @@
     "preinstall": "uv sync && (cargo install wasm-pack || node -e \"process.exit(0)\") && (pip install maturin || \"process.exit(0)\")",
     "build": "cargo build --release -p braillify && bun -F braillify build && cd packages/python && maturin build --release --out dist",
     "build:landing": "bun run build && (cargo test test_by_testcase || node -e \"process.exit(0)\") && bun -F landing build",
+    "build:dotnet-native": "cargo build --release -p dotnet",
+    "build:dotnet": "cd packages/dotnet && dotnet build -c Release",
+    "test:dotnet": "cd packages/dotnet && dotnet test",
+    "test:dotnet:net8.0": "cd packages/dotnet && dotnet test Braillify.Tests/Braillify.Tests.csproj --framework net8.0",
+    "test:dotnet:net9.0": "cd packages/dotnet && dotnet test Braillify.Tests/Braillify.Tests.csproj --framework net9.0",
+    "test:dotnet:net10.0": "cd packages/dotnet && dotnet test Braillify.Tests/Braillify.Tests.csproj --framework net10.0",
+    "test:dotnet:net472": "cd packages/dotnet && dotnet test Braillify.Tests.NetFramework/Braillify.Tests.NetFramework.csproj",
     "changepacks": "bunx @changepacks/cli"
   },
   "workspaces": [
