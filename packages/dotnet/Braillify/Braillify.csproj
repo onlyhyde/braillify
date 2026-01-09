@@ -6,10 +6,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
     <!-- NuGet Package 설정 -->
-    <PackageId>Braillify</PackageId>
+    <PackageId>Braillify.Core</PackageId>
     <Version>1.0.0</Version>
     <Authors>DevFive</Authors>
-    <Description>Rust 기반 크로스플랫폼 한국어 점역 라이브러리 .NET 바인딩</Description>
+    <Description>Rust 기반 크로스플랫폼 한국어 점역 라이브러리 .NET 바인딩 / Cross-platform Korean Braille Library .NET Binding</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://braillify.kr</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dev-five-git/braillify</RepositoryUrl>
