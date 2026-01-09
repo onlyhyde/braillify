@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- DLL 직접 참조 / Direct DLL reference -->
+  <ItemGroup>
+    <Reference Include="Braillify">
+      <HintPath>..\Braillify\bin\Release\net8.0\Braillify.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <!-- 네이티브 라이브러리 복사 / Copy native library -->
+  <ItemGroup>
+    <None Include="..\Braillify\runtimes\win-x64\native\braillify_native.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>runtimes\win-x64\native\braillify_native.dll</Link>
+    </None>
+  </ItemGroup>
+
+</Project>

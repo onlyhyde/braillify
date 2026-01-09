@@ -21,16 +21,11 @@
     <None Include="../README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
-  <!-- 네이티브 라이브러리 포함 -->
+  <!-- 네이티브 라이브러리 NuGet 패키지에 포함 -->
+  <!-- Include native libraries in NuGet package -->
   <ItemGroup>
-    <None Include="runtimes\**\*" Pack="true" PackagePath="runtimes" />
-  </ItemGroup>
-
-  <!-- 빌드 시 네이티브 라이브러리 복사 -->
-  <ItemGroup>
-    <Content Include="runtimes\**\*" Condition="Exists('runtimes')">
+    <None Include="runtimes\**\*" Pack="true" PackagePath="runtimes">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-    </Content>
+    </None>
   </ItemGroup>
 </Project>
