@@ -102,11 +102,13 @@ braillify/
 │   └── dotnet/               # .NET 바인딩 (FFI/P/Invoke)
 │       ├── Cargo.toml        # Rust FFI 크레이트 설정
 │       ├── src/lib.rs        # C ABI 노출 함수 (braillify_encode, braillify_encode_to_unicode 등)
-│       ├── Braillify/        # .NET 클래스 라이브러리
+│       ├── BraillifyNet/     # .NET 클래스 라이브러리 (NuGet: BraillifyNet)
 │       │   ├── Braillify.cs          # 공개 API (Encode, EncodeToUnicode, EncodeToBrailleFont)
 │       │   ├── NativeMethods.cs      # P/Invoke 선언 (버전별 전처리)
 │       │   ├── NativeLibraryLoader.cs # 플랫폼별 네이티브 라이브러리 로딩
 │       │   └── BraillifyException.cs  # 예외 클래스
+│       ├── Braillify/        # CLI 도구 (NuGet: Braillify, 명령어: braillify)
+│       │   └── Program.cs            # System.CommandLine 기반 CLI
 │       ├── Braillify.Tests/           # xUnit 테스트 (멀티타겟팅)
 │       └── Braillify.Tests.NetFramework/ # MSTest (.NET Framework 4.7.2)
 ├── apps/landing/             # Next.js 랜딩 페이지 (braillify.com)
@@ -134,15 +136,25 @@ braillify/
 - **Rust**: CLI 포함 네이티브 라이브러리 (`braillify` 바이너리는 `cli` 피처 필요)
 - **Node.js**: wasm-pack을 통한 WebAssembly, `braillify` npm 패키지로 배포
 - **Python**: PyO3/maturin을 통한 네이티브 확장, `braillify` PyPI 패키지로 배포
-- **.NET**: FFI/P/Invoke를 통한 네이티브 라이브러리, `Braillify` NuGet 패키지로 배포
+- **.NET**: FFI/P/Invoke를 통한 네이티브 라이브러리
+  - `BraillifyNet`: 라이브러리 NuGet 패키지
+  - `Braillify`: CLI 도구 NuGet 패키지 (`dnx braillify` 또는 `dotnet tool install -g Braillify`)
 
 ## .NET 바인딩 상세
+
+### NuGet 패키지
+
+| 패키지 | 설명 | 타겟 프레임워크 |
+|--------|------|----------------|
+| `BraillifyNet` | 라이브러리 | netstandard2.0, netcoreapp3.1, net5.0~net10.0 |
+| `Braillify` | CLI 도구 | net10.0 |
 
 ### 지원 플랫폼
 
 - .NET Standard 2.0
 - .NET Core 3.1
 - .NET 5.0, 6.0, 7.0, 8.0, 9.0, 10.0
+- .NET Framework 4.7.2 (테스트 지원)
 
 ### 버전별 구현 차이 (NativeMethods.cs)
 
@@ -168,6 +180,26 @@ braillify/
 | .NET 8.0+               | 18.\*                  | 2.\*  | 3.\*                      |
 
 > **주의**: xunit.runner.visualstudio 3.x는 .NET 8.0 이상에서만 지원됩니다.
+
+### CLI 사용법
+
+```bash
+# 글로벌 설치
+dotnet tool install -g Braillify
+
+# 설치 없이 실행 (.NET 10+)
+dnx braillify "안녕하세요"
+
+# 텍스트 변환
+braillify "안녕하세요"
+# 출력: ⠣⠒⠉⠻⠚⠠⠝⠬
+
+# 파이프 입력
+echo "안녕하세요" | braillify
+
+# REPL 모드 (인자 없이 실행)
+braillify
+```
 
 ## 테스트
 
