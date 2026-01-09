@@ -7,16 +7,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <!-- DLL 직접 참조 / Direct DLL reference -->
+  <!-- DLL 직접 참조 -->
   <ItemGroup>
-    <Reference Include="Braillify">
-      <HintPath>..\Braillify\bin\Release\net8.0\Braillify.dll</HintPath>
+    <Reference Include="BraillifyNet">
+      <HintPath>..\BraillifyNet\bin\Release\net8.0\BraillifyNet.dll</HintPath>
     </Reference>
   </ItemGroup>
 
-  <!-- 네이티브 라이브러리 복사 / Copy native library -->
+  <!-- 네이티브 라이브러리 복사 -->
   <ItemGroup>
-    <None Include="..\Braillify\runtimes\win-x64\native\braillify_native.dll">
+    <None Include="..\BraillifyNet\runtimes\win-x64\native\braillify_native.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>runtimes\win-x64\native\braillify_native.dll</Link>
     </None>

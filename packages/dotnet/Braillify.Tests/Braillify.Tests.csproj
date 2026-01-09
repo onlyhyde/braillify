@@ -61,6 +61,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Braillify\Braillify.csproj" />
+    <ProjectReference Include="..\BraillifyNet\BraillifyNet.csproj" />
   </ItemGroup>
 </Project>

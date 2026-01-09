@@ -18,12 +18,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Braillify\Braillify.csproj" />
+    <ProjectReference Include="..\BraillifyNet\BraillifyNet.csproj" />
   </ItemGroup>
 
-  <!-- 네이티브 라이브러리 복사 / Copy native library -->
+  <!-- 네이티브 라이브러리 복사 -->
   <ItemGroup>
-    <None Include="..\Braillify\runtimes\win-x64\native\braillify_native.dll" Condition="Exists('..\Braillify\runtimes\win-x64\native\braillify_native.dll')">
+    <None Include="..\BraillifyNet\runtimes\win-x64\native\braillify_native.dll" Condition="Exists('..\BraillifyNet\runtimes\win-x64\native\braillify_native.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
     </None>

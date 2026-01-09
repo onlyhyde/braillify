@@ -6,13 +6,13 @@ Rust 기반 크로스플랫폼 한국어 점역 라이브러리 .NET 바인딩
 
 | 패키지 | 설명 | NuGet |
 |--------|------|-------|
-| `Braillify.Net` | 라이브러리 | [![NuGet](https://img.shields.io/nuget/v/Braillify.Net)](https://www.nuget.org/packages/Braillify.Net) |
+| `BraillifyNet` | 라이브러리 | [![NuGet](https://img.shields.io/nuget/v/BraillifyNet)](https://www.nuget.org/packages/BraillifyNet) |
 | `Braillify` | CLI 도구 | [![NuGet](https://img.shields.io/nuget/v/Braillify)](https://www.nuget.org/packages/Braillify) |
 
 ## 라이브러리 설치
 
 ```bash
-dotnet add package Braillify.Net
+dotnet add package BraillifyNet
 ```
 
 ## 라이브러리 사용법
