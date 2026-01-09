@@ -1,6 +1,5 @@
 #if NET7_0_OR_GREATER
 // .NET 7+: LibraryImport (source generator) 사용 - 최고 성능
-// .NET 7+: Use LibraryImport (source generator) - best performance
 
 namespace Braillify;
 
@@ -101,8 +100,7 @@ internal static class NativeMethods
 }
 
 #else
-// .NET Standard 2.0: DllImport with IntPtr/UIntPtr and manual UTF-8 marshalling
-// .NET Standard 2.0: DllImport with IntPtr/UIntPtr and manual UTF-8 marshalling
+// .NET Standard 2.0: 수동 UTF-8 마샬링이 필요한 DllImport (IntPtr/UIntPtr)
 
 namespace Braillify;
 
@@ -114,7 +112,6 @@ internal static class NativeMethods
     private const string LibraryName = "braillify_native";
 
     // .NET Standard 2.0에서는 byte[] 포인터를 직접 전달
-    // In .NET Standard 2.0, pass byte[] pointer directly
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern IntPtr braillify_encode(
         IntPtr text,

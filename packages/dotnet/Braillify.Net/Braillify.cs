@@ -8,7 +8,6 @@ using System.Text;
 
 /// <summary>
 /// 한국어 텍스트를 점자로 변환하는 라이브러리입니다.
-/// Library for converting Korean text to braille.
 /// </summary>
 public static class Braillify
 {
@@ -21,12 +20,11 @@ public static class Braillify
 
     /// <summary>
     /// 텍스트를 점자 바이트 배열로 인코딩합니다.
-    /// Encodes text to braille byte array.
     /// </summary>
-    /// <param name="text">변환할 텍스트 / Text to convert</param>
-    /// <returns>점자 바이트 배열 / Braille byte array</returns>
-    /// <exception cref="ArgumentNullException">텍스트가 null인 경우 / When text is null</exception>
-    /// <exception cref="BraillifyException">인코딩 실패 시 / When encoding fails</exception>
+    /// <param name="text">변환할 텍스트</param>
+    /// <returns>점자 바이트 배열</returns>
+    /// <exception cref="ArgumentNullException">텍스트가 null인 경우</exception>
+    /// <exception cref="BraillifyException">인코딩 실패 시</exception>
     public static byte[] Encode(string text)
     {
 #if NET6_0_OR_GREATER
@@ -77,7 +75,6 @@ public static class Braillify
         }
 #else
         // .NET Standard 2.0: 수동 UTF-8 마샬링
-        // .NET Standard 2.0: Manual UTF-8 marshalling
         IntPtr textPtr = StringToUtf8Ptr(text);
         try
         {
@@ -109,12 +106,11 @@ public static class Braillify
 
     /// <summary>
     /// 텍스트를 점자 유니코드 문자열로 인코딩합니다.
-    /// Encodes text to braille unicode string.
     /// </summary>
-    /// <param name="text">변환할 텍스트 / Text to convert</param>
-    /// <returns>점자 유니코드 문자열 / Braille unicode string</returns>
-    /// <exception cref="ArgumentNullException">텍스트가 null인 경우 / When text is null</exception>
-    /// <exception cref="BraillifyException">인코딩 실패 시 / When encoding fails</exception>
+    /// <param name="text">변환할 텍스트</param>
+    /// <returns>점자 유니코드 문자열</returns>
+    /// <exception cref="ArgumentNullException">텍스트가 null인 경우</exception>
+    /// <exception cref="BraillifyException">인코딩 실패 시</exception>
     public static string EncodeToUnicode(string text)
     {
 #if NET6_0_OR_GREATER
@@ -164,7 +160,6 @@ public static class Braillify
         }
 #else
         // .NET Standard 2.0: 수동 UTF-8 마샬링
-        // .NET Standard 2.0: Manual UTF-8 marshalling
         IntPtr textPtr = StringToUtf8Ptr(text);
         try
         {
@@ -193,12 +188,11 @@ public static class Braillify
 
     /// <summary>
     /// 텍스트를 점자 폰트 문자열로 인코딩합니다.
-    /// Encodes text to braille font string.
     /// </summary>
-    /// <param name="text">변환할 텍스트 / Text to convert</param>
-    /// <returns>점자 폰트 문자열 / Braille font string</returns>
-    /// <exception cref="ArgumentNullException">텍스트가 null인 경우 / When text is null</exception>
-    /// <exception cref="BraillifyException">인코딩 실패 시 / When encoding fails</exception>
+    /// <param name="text">변환할 텍스트</param>
+    /// <returns>점자 폰트 문자열</returns>
+    /// <exception cref="ArgumentNullException">텍스트가 null인 경우</exception>
+    /// <exception cref="BraillifyException">인코딩 실패 시</exception>
     public static string EncodeToBrailleFont(string text)
     {
 #if NET6_0_OR_GREATER
@@ -248,7 +242,6 @@ public static class Braillify
         }
 #else
         // .NET Standard 2.0: 수동 UTF-8 마샬링
-        // .NET Standard 2.0: Manual UTF-8 marshalling
         IntPtr textPtr = StringToUtf8Ptr(text);
         try
         {
@@ -282,7 +275,7 @@ public static class Braillify
 
         if (errorPtr == 0)
         {
-            throw new BraillifyException("알 수 없는 오류가 발생했습니다. / Unknown error occurred.");
+            throw new BraillifyException("알 수 없는 오류가 발생했습니다.");
         }
 
         try
@@ -292,7 +285,7 @@ public static class Braillify
 #else
             var errorMessage = PtrToStringUtf8(errorPtr);
 #endif
-            throw new BraillifyException(errorMessage ?? "알 수 없는 오류 / Unknown error");
+            throw new BraillifyException(errorMessage ?? "알 수 없는 오류");
         }
         finally
         {
@@ -303,7 +296,7 @@ public static class Braillify
 
         if (errorPtr == IntPtr.Zero)
         {
-            throw new BraillifyException("알 수 없는 오류가 발생했습니다. / Unknown error occurred.");
+            throw new BraillifyException("알 수 없는 오류가 발생했습니다.");
         }
 
         try
@@ -337,7 +330,6 @@ public static class Braillify
         }
 
         // UTF-8 문자열 길이 계산
-        // Calculate UTF-8 string length
         var len = 0;
         while (Marshal.ReadByte(ptr, len) != 0)
         {
@@ -361,7 +353,6 @@ public static class Braillify
         if (string.IsNullOrEmpty(text))
         {
             // 빈 문자열의 경우 null-terminator만 포함된 버퍼 반환
-            // For empty strings, return a buffer with only null-terminator
             IntPtr emptyPtr = Marshal.AllocHGlobal(1);
             Marshal.WriteByte(emptyPtr, 0);
             return emptyPtr;

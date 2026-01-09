@@ -1,6 +1,5 @@
 #if NETCOREAPP3_0_OR_GREATER
 // .NET Core 3.0+: NativeLibrary 클래스 사용 가능
-// .NET Core 3.0+: NativeLibrary class available
 
 namespace Braillify;
 
@@ -17,7 +16,6 @@ internal static class NativeLibraryLoader
     private static bool _isLoaded;
 #if NET9_0_OR_GREATER
     // .NET 9+: Lock 클래스 사용 - 더 효율적인 동기화
-    // .NET 9+: Use Lock class - more efficient synchronization
     private static readonly Lock _lock = new();
 #else
     private static readonly object _lock = new object();
@@ -53,20 +51,16 @@ internal static class NativeLibraryLoader
         var libraryFileName = GetLibraryFileName();
 
         // AppContext.BaseDirectory 사용 (NativeAOT 호환)
-        // Use AppContext.BaseDirectory (NativeAOT compatible)
         var baseDir = AppContext.BaseDirectory;
         var paths = new[]
         {
             // NuGet 패키지 구조: runtimes/{rid}/native/{lib}
-            // NuGet package structure: runtimes/{rid}/native/{lib}
             Path.Combine(baseDir, "runtimes", rid, "native", libraryFileName),
 
             // 개발 환경: 직접 경로
-            // Development: direct path
             Path.Combine(baseDir, libraryFileName),
 
             // 상위 디렉토리 탐색
-            // Parent directory search
             Path.Combine(baseDir, "..", "runtimes", rid, "native", libraryFileName),
         };
 
@@ -79,7 +73,6 @@ internal static class NativeLibraryLoader
         }
 
         // 기본 로딩 시도 (시스템 PATH 등)
-        // Default loading attempt (system PATH, etc.)
         if (NativeLibrary.TryLoad(libraryName, assembly, searchPath, out var defaultHandle))
         {
             return defaultHandle;
@@ -115,7 +108,6 @@ internal static class NativeLibraryLoader
         }
 
         // 알 수 없는 플랫폼은 Linux로 가정
-        // Assume Linux for unknown platforms
         return $"linux-{arch}";
     }
 
@@ -132,7 +124,6 @@ internal static class NativeLibraryLoader
         }
 
         // Linux 및 기타
-        // Linux and others
         return "libbraillify_native.so";
     }
 }

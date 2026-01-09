@@ -1,31 +1,37 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
-    <LangVersion>latest</LangVersion>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- dotnet tool 설정 -->
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>braillify</ToolCommandName>
 
     <!-- NuGet Package 설정 -->
-    <PackageId>Braillify.Core</PackageId>
+    <PackageId>Braillify</PackageId>
     <Version>1.0.0</Version>
     <Authors>DevFive</Authors>
-    <Description>Rust 기반 크로스플랫폼 한국어 점역 라이브러리 .NET 바인딩 / Cross-platform Korean Braille Library .NET Binding</Description>
+    <Description>한국어 점자 변환 CLI 도구</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://braillify.kr</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dev-five-git/braillify</RepositoryUrl>
-    <PackageTags>braille;korean;translation;accessibility</PackageTags>
+    <PackageTags>braille;korean;translation;accessibility;cli</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../README.md" Pack="true" PackagePath="" />
+    <None Include="README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
-  <!-- 네이티브 라이브러리 NuGet 패키지에 포함 -->
-  <!-- Include native libraries in NuGet package -->
   <ItemGroup>
-    <None Include="runtimes\**\*" Pack="true" PackagePath="runtimes">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <PackageReference Include="System.CommandLine" Version="2.0.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Braillify\Braillify.csproj" />
+  </ItemGroup>
+
 </Project>
