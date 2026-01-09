@@ -35,7 +35,8 @@
       "Bash(dotnet run)",
       "Bash(dnx:*)",
       "Bash(braillify:*)",
-      "Bash(cmd /c \"dnx --help\")"
+      "Bash(cmd /c \"dnx --help\")",
+      "Bash(gh pr create:*)"
     ]
   }
 }
