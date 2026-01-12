@@ -36,7 +36,8 @@
       "Bash(dnx:*)",
       "Bash(braillify:*)",
       "Bash(cmd /c \"dnx --help\")",
-      "Bash(gh pr create:*)"
+      "Bash(gh pr create:*)",
+      "Bash(git rm:*)"
     ]
   }
 }

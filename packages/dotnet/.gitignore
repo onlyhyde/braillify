@@ -343,3 +343,6 @@ FodyWeavers.xsd
 
 ## JetBrains Rider
 *.sln.iml
+
+## Native libraries (built by Cargo)
+**/runtimes/*/native/
