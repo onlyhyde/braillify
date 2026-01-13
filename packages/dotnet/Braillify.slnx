@@ -1,0 +1,18 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/RustFFI/">
+    <File Path="src/lib.rs" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Braillify.DllVerification/Braillify.DllVerification.csproj" />
+    <Project Path="Braillify.Tests.NetFramework/Braillify.Tests.NetFramework.csproj" />
+    <Project Path="Braillify.Tests/Braillify.Tests.csproj" />
+    <Project Path="Braillify.Verification/Braillify.Verification.csproj" />
+  </Folder>
+  <Project Path="Braillify/Braillify.csproj" />
+  <Project Path="BraillifyNet/BraillifyNet.csproj" />
+</Solution>

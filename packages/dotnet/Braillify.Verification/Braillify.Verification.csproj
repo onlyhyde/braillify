@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- 로컬 개발 시 프로젝트 참조 사용, NuGet 배포 후 PackageReference로 변경 -->
+  <ItemGroup>
+    <ProjectReference Include="..\BraillifyNet\BraillifyNet.csproj" />
+  </ItemGroup>
+
+</Project>
