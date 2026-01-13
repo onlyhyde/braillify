@@ -64,6 +64,69 @@ jobs:
           fail_ci_if_error: true
         if: github.ref == 'refs/heads/main'
 
+  dotnet-test:
+    name: .NET Test
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+          - runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - runner: macos-14
+            target: aarch64-apple-darwin
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+
+      - name: Build native library
+        run: cargo build --release --target ${{ matrix.target }} -p dotnet
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            9.0.x
+            8.0.x
+
+      - name: Copy native library (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          mkdir -p packages/dotnet/BraillifyNet/runtimes/win-x64/native
+          cp target/${{ matrix.target }}/release/braillify_native.dll packages/dotnet/BraillifyNet/runtimes/win-x64/native/
+        shell: bash
+
+      - name: Copy native library (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p packages/dotnet/BraillifyNet/runtimes/linux-x64/native
+          cp target/${{ matrix.target }}/release/libbraillify_native.so packages/dotnet/BraillifyNet/runtimes/linux-x64/native/
+
+      - name: Copy native library (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p packages/dotnet/BraillifyNet/runtimes/osx-arm64/native
+          cp target/${{ matrix.target }}/release/libbraillify_native.dylib packages/dotnet/BraillifyNet/runtimes/osx-arm64/native/
+
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: packages/dotnet
+
+      - name: Build
+        run: dotnet build --no-restore -c Release
+        working-directory: packages/dotnet
+
+      - name: Test
+        run: dotnet test --no-build -c Release --verbosity normal
+        working-directory: packages/dotnet
+
   deploy-landing:
     name: Deploy Landing
     runs-on: ubuntu-latest
@@ -264,7 +327,7 @@ jobs:
             python-target: x86
 
           # macOS
-          - runner: macos-13
+          - runner: macos-14
             target: x86_64
             os: macos
           - runner: macos-14
@@ -513,7 +576,7 @@ jobs:
             rid: linux-arm64
             lib_name: libbraillify_native.so
           # macOS
-          - runner: macos-13
+          - runner: macos-14
             target: x86_64-apple-darwin
             rid: osx-x64
             lib_name: libbraillify_native.dylib
