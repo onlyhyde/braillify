@@ -31,23 +31,24 @@ src/
 
 ## KEY TYPES
 
-| Type | Location | Purpose |
-|------|----------|---------|
-| `Encoder` | `lib.rs` | Stateful encoder tracking English mode, uppercase state |
-| `CharType` | `char_struct.rs` | Input character classification |
-| `KoreanChar` | `korean_char.rs` | Decomposed Korean syllable (cho/jung/jong) |
+| Type         | Location         | Purpose                                                 |
+| ------------ | ---------------- | ------------------------------------------------------- |
+| `Encoder`    | `lib.rs`         | Stateful encoder tracking English mode, uppercase state |
+| `CharType`   | `char_struct.rs` | Input character classification                          |
+| `KoreanChar` | `korean_char.rs` | Decomposed Korean syllable (cho/jung/jong)              |
 
 ## ENTRY POINTS
 
-| Function | Location | Usage |
-|----------|----------|-------|
-| `encode(text)` | `lib.rs:634` | Returns `Result<Vec<u8>, String>` |
-| `encode_to_unicode(text)` | `lib.rs:648` | Returns Braille Unicode string |
-| `run_cli(args)` | `cli.rs:16` | CLI entry (feature: cli) |
+| Function                  | Location     | Usage                             |
+| ------------------------- | ------------ | --------------------------------- |
+| `encode(text)`            | `lib.rs:634` | Returns `Result<Vec<u8>, String>` |
+| `encode_to_unicode(text)` | `lib.rs:648` | Returns Braille Unicode string    |
+| `run_cli(args)`           | `cli.rs:16`  | CLI entry (feature: cli)          |
 
 ## RULE IMPLEMENTATION
 
 Korean comments reference rule numbers from 2024 Korean Braille Standard:
+
 - `제8항` - Standalone jamo
 - `제11항` - Vowel + 예 separator
 - `제14항` - 나/다/마... + vowel (no abbreviation)
