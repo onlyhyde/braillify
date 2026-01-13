@@ -116,15 +116,15 @@ jobs:
           cp target/${{ matrix.target }}/release/libbraillify_native.dylib packages/dotnet/BraillifyNet/runtimes/osx-arm64/native/
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore Braillify.Tests/Braillify.Tests.csproj
         working-directory: packages/dotnet
 
       - name: Build
-        run: dotnet build --no-restore -c Release
+        run: dotnet build --no-restore -c Release Braillify.Tests/Braillify.Tests.csproj
         working-directory: packages/dotnet
 
       - name: Test
-        run: dotnet test --no-build -c Release --verbosity normal
+        run: dotnet test --no-build -c Release --verbosity normal Braillify.Tests/Braillify.Tests.csproj
         working-directory: packages/dotnet
 
   deploy-landing:
@@ -133,6 +133,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs:
       - test
+      - dotnet-test
     steps:
       - uses: actions/checkout@v5
       - uses: oven-sh/setup-bun@v2
@@ -178,6 +179,7 @@ jobs:
       contents: write
     needs:
       - test
+      - dotnet-test
     steps:
       - uses: actions/checkout@v5
       - uses: changepacks/action@main
@@ -190,6 +192,7 @@ jobs:
   node-build:
     needs:
       - test
+      - dotnet-test
       - changepacks
     if: ${{ contains(needs.changepacks.outputs.changepacks, 'packages/node/package.json') }}
     strategy:
@@ -271,6 +274,7 @@ jobs:
     if: ${{ contains(needs.changepacks.outputs.changepacks, 'packages/python/pyproject.toml') }}
     needs:
       - test
+      - dotnet-test
       - changepacks
     strategy:
       fail-fast: false
