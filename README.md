@@ -94,3 +94,15 @@ pip install braillify
 ```bash
 cargo add braillify
 ```
+
+### 빠른 실행 (CLI)
+
+설치 없이 바로 실행해 보고 싶다면:
+
+```bash
+npx braillify
+# or
+bunx braillify
+# or
+dnx braillify
+```
