@@ -92,12 +92,11 @@ jobs:
             target: aarch64-apple-darwin
             rid: osx-arm64
             lib_name: libbraillify_native.dylib
-          # macOS x64 (via Rosetta on macos-14)
+          # macOS x64 (x64 SDK on macos-14)
           - runner: macos-14
             target: x86_64-apple-darwin
             rid: osx-x64
             lib_name: libbraillify_native.dylib
-            run_prefix: arch -x86_64
     steps:
       - uses: actions/checkout@v5
 
@@ -111,7 +110,7 @@ jobs:
         run: cargo build --release --target ${{ matrix.target }} -p dotnet
 
       - name: Setup .NET
-        if: matrix.dotnet_arch != 'x86'
+        if: matrix.dotnet_arch != 'x86' && matrix.rid != 'osx-x64'
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
@@ -123,13 +122,23 @@ jobs:
         shell: pwsh
         run: |
           $installDir = "$env:RUNNER_TEMP\dotnet-x86"
-          # Install .NET 8.0 x86
           Invoke-WebRequest -Uri https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1
           ./dotnet-install.ps1 -Channel 8.0 -Architecture x86 -InstallDir $installDir
           ./dotnet-install.ps1 -Channel 9.0 -Architecture x86 -InstallDir $installDir
+          ./dotnet-install.ps1 -Channel 10.0 -Architecture x86 -InstallDir $installDir -Quality preview
           # Add to PATH and set DOTNET_ROOT
           echo "$installDir" | Out-File -FilePath $env:GITHUB_PATH -Append
           echo "DOTNET_ROOT=$installDir" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Setup .NET x64 (macOS)
+        if: matrix.rid == 'osx-x64'
+        run: |
+          export DOTNET_INSTALL_DIR="$RUNNER_TEMP/dotnet-x64"
+          curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 8.0 --architecture x64 --install-dir "$DOTNET_INSTALL_DIR"
+          curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 9.0 --architecture x64 --install-dir "$DOTNET_INSTALL_DIR"
+          curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 10.0 --architecture x64 --install-dir "$DOTNET_INSTALL_DIR" --quality preview
+          echo "$DOTNET_INSTALL_DIR" >> $GITHUB_PATH
+          echo "DOTNET_ROOT=$DOTNET_INSTALL_DIR" >> $GITHUB_ENV
 
       - name: Copy native library
         run: |
@@ -138,19 +147,19 @@ jobs:
         shell: bash
 
       - name: Restore dependencies
-        run: ${{ matrix.run_prefix }} dotnet restore Braillify.Tests/Braillify.Tests.csproj
+        run: dotnet restore Braillify.Tests/Braillify.Tests.csproj
         working-directory: packages/dotnet
 
       - name: Build
-        run: ${{ matrix.run_prefix }} dotnet build --no-restore -c Release Braillify.Tests/Braillify.Tests.csproj
+        run: dotnet build --no-restore -c Release Braillify.Tests/Braillify.Tests.csproj
         working-directory: packages/dotnet
 
       - name: Test (.NET 8.0)
-        run: ${{ matrix.run_prefix }} dotnet test --no-build -c Release --verbosity normal --framework net8.0 Braillify.Tests/Braillify.Tests.csproj
+        run: dotnet test --no-build -c Release --verbosity normal --framework net8.0 Braillify.Tests/Braillify.Tests.csproj
         working-directory: packages/dotnet
 
       - name: Test (.NET 9.0)
-        run: ${{ matrix.run_prefix }} dotnet test --no-build -c Release --verbosity normal --framework net9.0 Braillify.Tests/Braillify.Tests.csproj
+        run: dotnet test --no-build -c Release --verbosity normal --framework net9.0 Braillify.Tests/Braillify.Tests.csproj
         working-directory: packages/dotnet
 
   deploy-landing:
