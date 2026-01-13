@@ -26,21 +26,22 @@ braillify/
 
 ## WHERE TO LOOK
 
-| Task | Location | Notes |
-|------|----------|-------|
-| Braille encoding logic | `libs/braillify/src/lib.rs` | Main `Encoder` struct, `encode()` |
-| Korean character handling | `libs/braillify/src/korean_*.rs` | Choseong/Jungseong/Jongseong |
-| Rule implementations | `libs/braillify/src/rule.rs`, `rule_en.rs` | Korean Braille Standard rules |
-| Symbol/shortcut tables | `libs/braillify/src/*_shortcut.rs` | PHF static maps |
-| CLI | `libs/braillify/src/cli.rs` | REPL mode, one-shot mode |
-| Node.js API | `packages/node/src/lib.rs` | `encode`, `translateToUnicode` |
-| Python API | `packages/python/src/lib.rs` | Same API + CLI entry |
-| Landing page | `apps/landing/src/app/` | Next.js App Router |
-| Test cases | `test_cases/*.csv` | Format: input,internal,expected,unicode |
+| Task                      | Location                                   | Notes                                   |
+| ------------------------- | ------------------------------------------ | --------------------------------------- |
+| Braille encoding logic    | `libs/braillify/src/lib.rs`                | Main `Encoder` struct, `encode()`       |
+| Korean character handling | `libs/braillify/src/korean_*.rs`           | Choseong/Jungseong/Jongseong            |
+| Rule implementations      | `libs/braillify/src/rule.rs`, `rule_en.rs` | Korean Braille Standard rules           |
+| Symbol/shortcut tables    | `libs/braillify/src/*_shortcut.rs`         | PHF static maps                         |
+| CLI                       | `libs/braillify/src/cli.rs`                | REPL mode, one-shot mode                |
+| Node.js API               | `packages/node/src/lib.rs`                 | `encode`, `translateToUnicode`          |
+| Python API                | `packages/python/src/lib.rs`               | Same API + CLI entry                    |
+| Landing page              | `apps/landing/src/app/`                    | Next.js App Router                      |
+| Test cases                | `test_cases/*.csv`                         | Format: input,internal,expected,unicode |
 
 ## CONVENTIONS
 
 ### Rust
+
 - Edition 2024, resolver 3
 - PHF macros for static lookup tables
 - `Result<T, String>` for encoding errors (no custom error type)
@@ -48,12 +49,14 @@ braillify/
 - Tests inline with `#[cfg(test)]` modules
 
 ### TypeScript
+
 - `strict: true`, `moduleResolution: bundler`
 - `@/*` path alias to `./src/*`
 - ESLint: `eslint-plugin-devup` recommended config
 - Vitest with `vite-plugin-wasm` for WASM tests
 
 ### Python
+
 - Requires Python >= 3.13 (workspace), >= 3.8 (package)
 - `uv` for workspace management
 - `maturin` for building wheels
