@@ -71,23 +71,33 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Windows x64
           - runner: windows-latest
             target: x86_64-pc-windows-msvc
             rid: win-x64
             lib_name: braillify_native.dll
+          # Windows x86 (32-bit)
           - runner: windows-latest
             target: i686-pc-windows-msvc
             rid: win-x86
             lib_name: braillify_native.dll
-            arch_flag: -a x86
+            dotnet_arch: x86
+          # Linux x64
           - runner: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             rid: linux-x64
             lib_name: libbraillify_native.so
+          # macOS arm64 (native)
           - runner: macos-14
             target: aarch64-apple-darwin
             rid: osx-arm64
             lib_name: libbraillify_native.dylib
+          # macOS x64 (via Rosetta on macos-14)
+          - runner: macos-14
+            target: x86_64-apple-darwin
+            rid: osx-x64
+            lib_name: libbraillify_native.dylib
+            run_prefix: arch -x86_64
     steps:
       - uses: actions/checkout@v5
 
@@ -101,11 +111,25 @@ jobs:
         run: cargo build --release --target ${{ matrix.target }} -p dotnet
 
       - name: Setup .NET
+        if: matrix.dotnet_arch != 'x86'
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
             9.0.x
             8.0.x
+
+      - name: Setup .NET x86
+        if: matrix.dotnet_arch == 'x86'
+        shell: pwsh
+        run: |
+          $installDir = "$env:RUNNER_TEMP\dotnet-x86"
+          # Install .NET 8.0 x86
+          Invoke-WebRequest -Uri https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1
+          ./dotnet-install.ps1 -Channel 8.0 -Architecture x86 -InstallDir $installDir
+          ./dotnet-install.ps1 -Channel 9.0 -Architecture x86 -InstallDir $installDir
+          # Add to PATH and set DOTNET_ROOT
+          echo "$installDir" | Out-File -FilePath $env:GITHUB_PATH -Append
+          echo "DOTNET_ROOT=$installDir" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Copy native library
         run: |
@@ -114,19 +138,19 @@ jobs:
         shell: bash
 
       - name: Restore dependencies
-        run: dotnet restore ${{ matrix.arch_flag }} Braillify.Tests/Braillify.Tests.csproj
+        run: ${{ matrix.run_prefix }} dotnet restore Braillify.Tests/Braillify.Tests.csproj
         working-directory: packages/dotnet
 
       - name: Build
-        run: dotnet build --no-restore -c Release ${{ matrix.arch_flag }} Braillify.Tests/Braillify.Tests.csproj
+        run: ${{ matrix.run_prefix }} dotnet build --no-restore -c Release Braillify.Tests/Braillify.Tests.csproj
         working-directory: packages/dotnet
 
       - name: Test (.NET 8.0)
-        run: dotnet test --no-build -c Release --verbosity normal --framework net8.0 ${{ matrix.arch_flag }} Braillify.Tests/Braillify.Tests.csproj
+        run: ${{ matrix.run_prefix }} dotnet test --no-build -c Release --verbosity normal --framework net8.0 Braillify.Tests/Braillify.Tests.csproj
         working-directory: packages/dotnet
 
       - name: Test (.NET 9.0)
-        run: dotnet test --no-build -c Release --verbosity normal --framework net9.0 ${{ matrix.arch_flag }} Braillify.Tests/Braillify.Tests.csproj
+        run: ${{ matrix.run_prefix }} dotnet test --no-build -c Release --verbosity normal --framework net9.0 Braillify.Tests/Braillify.Tests.csproj
         working-directory: packages/dotnet
 
   deploy-landing:
