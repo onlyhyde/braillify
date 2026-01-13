@@ -123,8 +123,12 @@ jobs:
         run: dotnet build --no-restore -c Release Braillify.Tests/Braillify.Tests.csproj
         working-directory: packages/dotnet
 
-      - name: Test
-        run: dotnet test --no-build -c Release --verbosity normal Braillify.Tests/Braillify.Tests.csproj
+      - name: Test (.NET 8.0)
+        run: dotnet test --no-build -c Release --verbosity normal --framework net8.0 Braillify.Tests/Braillify.Tests.csproj
+        working-directory: packages/dotnet
+
+      - name: Test (.NET 9.0)
+        run: dotnet test --no-build -c Release --verbosity normal --framework net9.0 Braillify.Tests/Braillify.Tests.csproj
         working-directory: packages/dotnet
 
   deploy-landing:
