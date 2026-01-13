@@ -65,7 +65,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
 
   dotnet-test:
-    name: .NET Test
+    name: .NET Test - ${{ matrix.rid }}
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
@@ -73,10 +73,20 @@ jobs:
         include:
           - runner: windows-latest
             target: x86_64-pc-windows-msvc
+            rid: win-x64
+            lib_name: braillify_native.dll
+          - runner: windows-latest
+            target: i686-pc-windows-msvc
+            rid: win-x86
+            lib_name: braillify_native.dll
           - runner: ubuntu-latest
             target: x86_64-unknown-linux-gnu
+            rid: linux-x64
+            lib_name: libbraillify_native.so
           - runner: macos-14
             target: aarch64-apple-darwin
+            rid: osx-arm64
+            lib_name: libbraillify_native.dylib
     steps:
       - uses: actions/checkout@v5
 
@@ -96,24 +106,11 @@ jobs:
             9.0.x
             8.0.x
 
-      - name: Copy native library (Windows)
-        if: runner.os == 'Windows'
+      - name: Copy native library
         run: |
-          mkdir -p packages/dotnet/BraillifyNet/runtimes/win-x64/native
-          cp target/${{ matrix.target }}/release/braillify_native.dll packages/dotnet/BraillifyNet/runtimes/win-x64/native/
+          mkdir -p packages/dotnet/BraillifyNet/runtimes/${{ matrix.rid }}/native
+          cp target/${{ matrix.target }}/release/${{ matrix.lib_name }} packages/dotnet/BraillifyNet/runtimes/${{ matrix.rid }}/native/
         shell: bash
-
-      - name: Copy native library (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          mkdir -p packages/dotnet/BraillifyNet/runtimes/linux-x64/native
-          cp target/${{ matrix.target }}/release/libbraillify_native.so packages/dotnet/BraillifyNet/runtimes/linux-x64/native/
-
-      - name: Copy native library (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          mkdir -p packages/dotnet/BraillifyNet/runtimes/osx-arm64/native
-          cp target/${{ matrix.target }}/release/libbraillify_native.dylib packages/dotnet/BraillifyNet/runtimes/osx-arm64/native/
 
       - name: Restore dependencies
         run: dotnet restore Braillify.Tests/Braillify.Tests.csproj
