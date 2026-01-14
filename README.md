@@ -127,3 +127,11 @@ bunx braillify
 # or
 dnx braillify
 ```
+
+---
+
+## Donors
+
+<a href="https://moredream.co.kr">
+  <img src="https://raw.githubusercontent.com/dev-five-git/braillify/main/media/moredream-inc.png" alt="MoreDream INC." height="60" />
+</a>
