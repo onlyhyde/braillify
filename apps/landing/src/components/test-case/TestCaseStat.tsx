@@ -19,7 +19,7 @@ export function TestCaseStat({
 
   return (
     <Center
-      bg="#D8D8D8"
+      bg="$menuHover"
       borderRadius="10px"
       gap="10px"
       px="16px"
