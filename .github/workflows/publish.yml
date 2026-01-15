@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  pull_request:
+  pull_request_target: 
     branches:
       - main
 permissions: write-all
@@ -64,12 +64,111 @@ jobs:
           fail_ci_if_error: true
         if: github.ref == 'refs/heads/main'
 
+  dotnet-test:
+    name: .NET Test - ${{ matrix.rid }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Windows x64
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            rid: win-x64
+            lib_name: braillify_native.dll
+          # Windows x86 (32-bit)
+          - runner: windows-latest
+            target: i686-pc-windows-msvc
+            rid: win-x86
+            lib_name: braillify_native.dll
+            dotnet_arch: x86
+          # Linux x64
+          - runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            rid: linux-x64
+            lib_name: libbraillify_native.so
+          # macOS arm64 (native)
+          - runner: macos-14
+            target: aarch64-apple-darwin
+            rid: osx-arm64
+            lib_name: libbraillify_native.dylib
+          # macOS x64 (x64 SDK on macos-14)
+          - runner: macos-14
+            target: x86_64-apple-darwin
+            rid: osx-x64
+            lib_name: libbraillify_native.dylib
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+
+      - name: Build native library
+        run: cargo build --release --target ${{ matrix.target }} -p dotnet
+
+      - name: Setup .NET
+        if: matrix.dotnet_arch != 'x86' && matrix.rid != 'osx-x64'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            9.0.x
+            8.0.x
+
+      - name: Setup .NET x86
+        if: matrix.dotnet_arch == 'x86'
+        shell: pwsh
+        run: |
+          $installDir = "$env:RUNNER_TEMP\dotnet-x86"
+          Invoke-WebRequest -Uri https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1
+          ./dotnet-install.ps1 -Channel 8.0 -Architecture x86 -InstallDir $installDir
+          ./dotnet-install.ps1 -Channel 9.0 -Architecture x86 -InstallDir $installDir
+          ./dotnet-install.ps1 -Channel 10.0 -Architecture x86 -InstallDir $installDir -Quality preview
+          # Add to PATH and set DOTNET_ROOT
+          echo "$installDir" | Out-File -FilePath $env:GITHUB_PATH -Append
+          echo "DOTNET_ROOT=$installDir" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Setup .NET x64 (macOS)
+        if: matrix.rid == 'osx-x64'
+        run: |
+          export DOTNET_INSTALL_DIR="$RUNNER_TEMP/dotnet-x64"
+          curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 8.0 --architecture x64 --install-dir "$DOTNET_INSTALL_DIR"
+          curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 9.0 --architecture x64 --install-dir "$DOTNET_INSTALL_DIR"
+          curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 10.0 --architecture x64 --install-dir "$DOTNET_INSTALL_DIR" --quality preview
+          echo "$DOTNET_INSTALL_DIR" >> $GITHUB_PATH
+          echo "DOTNET_ROOT=$DOTNET_INSTALL_DIR" >> $GITHUB_ENV
+
+      - name: Copy native library
+        run: |
+          mkdir -p packages/dotnet/BraillifyNet/runtimes/${{ matrix.rid }}/native
+          cp target/${{ matrix.target }}/release/${{ matrix.lib_name }} packages/dotnet/BraillifyNet/runtimes/${{ matrix.rid }}/native/
+        shell: bash
+
+      - name: Restore dependencies
+        run: dotnet restore Braillify.Tests/Braillify.Tests.csproj
+        working-directory: packages/dotnet
+
+      - name: Build
+        run: dotnet build --no-restore -c Release Braillify.Tests/Braillify.Tests.csproj
+        working-directory: packages/dotnet
+
+      - name: Test (.NET 8.0)
+        run: dotnet test --no-build -c Release --verbosity normal --framework net8.0 Braillify.Tests/Braillify.Tests.csproj
+        working-directory: packages/dotnet
+
+      - name: Test (.NET 9.0)
+        run: dotnet test --no-build -c Release --verbosity normal --framework net9.0 Braillify.Tests/Braillify.Tests.csproj
+        working-directory: packages/dotnet
+
   deploy-landing:
     name: Deploy Landing
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs:
       - test
+      - dotnet-test
     steps:
       - uses: actions/checkout@v5
       - uses: oven-sh/setup-bun@v2
@@ -115,6 +214,7 @@ jobs:
       contents: write
     needs:
       - test
+      - dotnet-test
     steps:
       - uses: actions/checkout@v5
       - uses: changepacks/action@main
@@ -127,6 +227,7 @@ jobs:
   node-build:
     needs:
       - test
+      - dotnet-test
       - changepacks
     if: ${{ contains(needs.changepacks.outputs.changepacks, 'packages/node/package.json') }}
     strategy:
@@ -208,6 +309,7 @@ jobs:
     if: ${{ contains(needs.changepacks.outputs.changepacks, 'packages/python/pyproject.toml') }}
     needs:
       - test
+      - dotnet-test
       - changepacks
     strategy:
       fail-fast: false
@@ -264,7 +366,7 @@ jobs:
             python-target: x86
 
           # macOS
-          - runner: macos-13
+          - runner: macos-14
             target: x86_64
             os: macos
           - runner: macos-14
@@ -430,7 +532,7 @@ jobs:
         run: cargo build --release --target ${{ matrix.target }} -p braillify
       - name: Rename binary
         run: mv target/${{ matrix.target }}/release/braillify${{ matrix.os == 'windows' && '.exe' || '' }} ${{ matrix.binary_name }}
-      
+
       - name: Upload Asset
         uses: owjs3901/upload-github-release-asset@main
         with:
@@ -478,3 +580,144 @@ jobs:
           token: ${{ secrets.WINGET_TOKEN }}
           version: ${{ steps.version.outputs.version }}
 
+  # dotnet
+  dotnet-build:
+    name: .NET Build - ${{ matrix.rid }}
+    runs-on: ${{ matrix.runner }}
+    if: ${{ contains(needs.changepacks.outputs.changepacks, 'packages/dotnet') }}
+    needs:
+      - test
+      - changepacks
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Windows
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            rid: win-x64
+            lib_name: braillify_native.dll
+          - runner: windows-latest
+            target: i686-pc-windows-msvc
+            rid: win-x86
+            lib_name: braillify_native.dll
+          - runner: windows-latest
+            target: aarch64-pc-windows-msvc
+            rid: win-arm64
+            lib_name: braillify_native.dll
+          # Linux
+          - runner: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            rid: linux-x64
+            lib_name: libbraillify_native.so
+          - runner: ubuntu-22.04
+            target: aarch64-unknown-linux-gnu
+            rid: linux-arm64
+            lib_name: libbraillify_native.so
+          # macOS
+          - runner: macos-14
+            target: x86_64-apple-darwin
+            rid: osx-x64
+            lib_name: libbraillify_native.dylib
+          - runner: macos-14
+            target: aarch64-apple-darwin
+            rid: osx-arm64
+            lib_name: libbraillify_native.dylib
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+
+      - name: Install cross-compilation tools (Linux ARM64)
+        if: matrix.rid == 'linux-arm64'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      - name: Build native library
+        run: cargo build --release --target ${{ matrix.target }} -p dotnet
+        env:
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-native-${{ matrix.rid }}
+          path: target/${{ matrix.target }}/release/${{ matrix.lib_name }}
+          if-no-files-found: error
+
+  dotnet-publish:
+    name: .NET Publish
+    runs-on: ubuntu-latest
+    if: ${{ contains(needs.changepacks.outputs.changepacks, 'packages/dotnet') }}
+    needs:
+      - changepacks
+      - dotnet-build
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Download all native artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: native-artifacts
+          pattern: dotnet-native-*
+
+      - name: Prepare native libraries
+        run: |
+          # Create runtimes directories
+          mkdir -p packages/dotnet/BraillifyNet/runtimes/win-x64/native
+          mkdir -p packages/dotnet/BraillifyNet/runtimes/win-x86/native
+          mkdir -p packages/dotnet/BraillifyNet/runtimes/win-arm64/native
+          mkdir -p packages/dotnet/BraillifyNet/runtimes/linux-x64/native
+          mkdir -p packages/dotnet/BraillifyNet/runtimes/linux-arm64/native
+          mkdir -p packages/dotnet/BraillifyNet/runtimes/osx-x64/native
+          mkdir -p packages/dotnet/BraillifyNet/runtimes/osx-arm64/native
+
+          # Copy native libraries to runtimes folders
+          cp native-artifacts/dotnet-native-win-x64/* packages/dotnet/BraillifyNet/runtimes/win-x64/native/
+          cp native-artifacts/dotnet-native-win-x86/* packages/dotnet/BraillifyNet/runtimes/win-x86/native/
+          cp native-artifacts/dotnet-native-win-arm64/* packages/dotnet/BraillifyNet/runtimes/win-arm64/native/
+          cp native-artifacts/dotnet-native-linux-x64/* packages/dotnet/BraillifyNet/runtimes/linux-x64/native/
+          cp native-artifacts/dotnet-native-linux-arm64/* packages/dotnet/BraillifyNet/runtimes/linux-arm64/native/
+          cp native-artifacts/dotnet-native-osx-x64/* packages/dotnet/BraillifyNet/runtimes/osx-x64/native/
+          cp native-artifacts/dotnet-native-osx-arm64/* packages/dotnet/BraillifyNet/runtimes/osx-arm64/native/
+
+          # List for verification
+          echo "=== Native libraries ==="
+          find packages/dotnet/BraillifyNet/runtimes -type f
+
+      - name: Build and Pack BraillifyNet
+        run: dotnet pack -c Release -o nupkg
+        working-directory: packages/dotnet/BraillifyNet
+
+      - name: Build and Pack Braillify CLI
+        run: dotnet pack -c Release -o nupkg
+        working-directory: packages/dotnet/Braillify
+
+      - name: List packages
+        run: |
+          echo "=== NuGet packages ==="
+          find packages/dotnet -name "*.nupkg" -type f
+
+      - name: Publish to NuGet
+        run: |
+          dotnet nuget push packages/dotnet/BraillifyNet/nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          dotnet nuget push packages/dotnet/Braillify/nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Upload NuGet packages as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: packages/dotnet/**/nupkg/*.nupkg

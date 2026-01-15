@@ -69,6 +69,27 @@ braillify는 **Rust 언어**로 개발되었으며, **Node.js**, **Rust**, **Pyt
 
 ---
 
+## 📦 개발 환경 가이드
+
+### 설치 목록
+- Rust / Cargo: 코어 빌드 및 테스트
+- Bun: 스크립트 및 패키지 관리
+
+### 테스트 명령어
+```bash
+# 표준 테스트(권장)
+bun run test
+
+# 모든 것을 테스트 (주의: 개선 중인 예외 케이스로 인해 일부 실패할 수 있습니다.)
+cd libs/braillify && cargo test
+```
+
+### 디렉토리 설명
+
+- packages/ : 타 언어 바인딩 (Node.js, Python 등)
+- libs/braillify: Rust 기반 핵심 로직 (Core)
+
+
 ## 📦 설치
 
 ### Node.js
@@ -94,3 +115,23 @@ pip install braillify
 ```bash
 cargo add braillify
 ```
+
+### 빠른 실행 (CLI)
+
+설치 없이 바로 실행해 보고 싶다면:
+
+```bash
+npx braillify
+# or
+bunx braillify
+# or
+dnx braillify
+```
+
+---
+
+## Donors
+
+<a href="https://www.themoredream.com">
+  <img src="https://raw.githubusercontent.com/dev-five-git/braillify/main/media/moredream-inc.png" alt="MoreDream INC." height="60" />
+</a>
