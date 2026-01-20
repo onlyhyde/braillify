@@ -102,6 +102,12 @@ impl Encoder {
         skip_count: &mut usize,
         result: &mut Vec<u8>,
     ) -> Result<(), String> {
+        // 제53항 가운뎃점으로 쓴 줄임표(…… , …)는 ⠠⠠⠠으로, 마침표로 쓴 줄임표(...... , ...)는 ⠲⠲⠲으로 적는다.
+        let normalized_word = word
+            .replace("......", "...")
+            .replace("……", "…");
+        let word = normalized_word.as_str();
+
         if word.starts_with('$') && word.ends_with('$') {
             if let Some((whole, num, den)) = fraction::parse_latex_fraction(word) {
                 if let Some(w) = whole {
