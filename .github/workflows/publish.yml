@@ -219,6 +219,8 @@ jobs:
       - uses: actions/checkout@v5
       - uses: changepacks/action@main
         id: changepacks
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       changepacks: ${{ steps.changepacks.outputs.changepacks }}
       release_assets_urls: ${{ steps.changepacks.outputs.release_assets_urls }}

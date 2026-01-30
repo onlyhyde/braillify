@@ -8,7 +8,7 @@ static SHORTCUT_MAP: phf::Map<char, &'static [u8]> = phf_map! {
     '\'' => &[decode_unicode('⠠'), decode_unicode('⠦')],
     // '\'' => &[decode_unicode('⠴'), decode_unicode('⠄')],
     '~' => &[decode_unicode('⠈'), decode_unicode('⠔')],
-    '…' => &[decode_unicode('⠲'), decode_unicode('⠲'), decode_unicode('⠲')],
+    '…' => &[decode_unicode('⠠'), decode_unicode('⠠'), decode_unicode('⠠')],
     '⋯' => &[decode_unicode('⠠'), decode_unicode('⠠'), decode_unicode('⠠')],
     '!' => &[decode_unicode('⠖')],
     '.' => &[decode_unicode('⠲')],
@@ -45,7 +45,8 @@ static SHORTCUT_MAP: phf::Map<char, &'static [u8]> = phf_map! {
     // '×' => &[decode_unicode('⠸'),decode_unicode('⠭'), decode_unicode('⠇')],
     '△' => &[decode_unicode('⠸'),decode_unicode('⠬'), decode_unicode('⠇')],
     '□' => &[decode_unicode('⠸'),decode_unicode('⠶'), decode_unicode('⠇')],
-    'ː' => &[decode_unicode('⠰'), decode_unicode('⠂')],
+    'ː' => &[decode_unicode('⠠'), decode_unicode('⠄')],
+    '〃' => &[decode_unicode('⠴'), decode_unicode('⠴')],
 };
 
 static ENGLISH_SYMBOL_MAP: phf::Map<char, &'static [u8]> = phf_map! {
@@ -115,9 +116,17 @@ mod test {
         assert_eq!(
             encode_char_symbol_shortcut('…').unwrap(),
             &[
-                decode_unicode('⠲'),
-                decode_unicode('⠲'),
-                decode_unicode('⠲')
+                decode_unicode('⠠'),
+                decode_unicode('⠠'),
+                decode_unicode('⠠')
+            ]
+        );
+        assert_eq!(
+            encode_char_symbol_shortcut('⋯').unwrap(),
+            &[
+                decode_unicode('⠠'),
+                decode_unicode('⠠'),
+                decode_unicode('⠠')
             ]
         );
         assert_eq!(
